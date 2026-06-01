@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: Cleaning Services API
+  description: Employee CRUD
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+components:
+  schemas:
+    EmployeeRequest:
+      type: object
+      description: Data to create or update an employee
+      required:
+        - name
+        - cpf
+        - role
+      properties:
+        name:
+          type: string
+          example: Maria Silva
+        cpf:
+          type: string
+          example: "123.456.789-00"
+        role:
+          type: string
+          enum: [CLEANER, SUPERVISOR, ADMIN]
+          example: CLEANER
+        email:
+          type: string
+          example: maria.silva@email.com
+
+    EmployeeResponse:
+      type: object
+      description: Data returned from an employee
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Maria Silva
+        cpf:
+          type: string
+          example: "123.456.789-00"
+        role:
+          type: string
+          enum: [CLEANER, SUPERVISOR, ADMIN]
+          example: CLEANER
+        email:
+          type: string
+          example: maria.silva@email.com
+paths:
+  /employees:
+    post:
+      summary: Create a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '201':
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid data
+        '409':
+          description: CPF or email already exists
+    get:
+      summary: List all employees
+      responses:
+        '200':
+          description: Employee list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeResponse'
+  /employees/{id}:
+    get:
+      summary: Find employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '404':
+          description: Employee not found
+    put:
+      summary: Update an employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        '200':
+          description: Employee updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Invalid data
+        '404':
+          description: Employee not found
+        '409':
+          description: CPF or email already exists
+    delete:
+      summary: Delete an employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Employee deleted successfully
+        '404':
+          description: Employee not found
