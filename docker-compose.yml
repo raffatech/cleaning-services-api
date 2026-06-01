@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: cleaningservices-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cleaningservices
+    ports:
+      - "5432:5432"
+    volumes:
+      - cleaningservices_data:/var/lib/postgresql/data
+
+volumes:
+  cleaningservices_data:
