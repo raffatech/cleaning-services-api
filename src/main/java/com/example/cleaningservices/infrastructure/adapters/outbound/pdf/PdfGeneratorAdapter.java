@@ -43,8 +43,12 @@ public class PdfGeneratorAdapter {
             writeText(content, font, 9, String.valueOf(receipt.getReceiptNumber()),
                     255, pageHeight - 30);
 
-            // ─── Valor R$ ─────────────────────────────────────────────
-            writeText(content, font, 9, receipt.getValue().toString(),
+            // ─── Valor R$ (formato brasileiro: 80,00) ─────────────────
+            String valorFormatado = receipt.getValue()
+                    .setScale(2, java.math.RoundingMode.HALF_UP)
+                    .toPlainString()
+                    .replace(".", ",");
+            writeText(content, font, 9, valorFormatado,
                     276, pageHeight - 59);
 
             // ─── Recebemos de ─────────────────────────────────────────
