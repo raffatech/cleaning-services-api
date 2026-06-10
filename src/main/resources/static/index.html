@@ -37,7 +37,6 @@
       margin-top: 4px;
     }
 
-    /* ── Tela de seleção ── */
     #tela-selecao {
       width: 100%;
       max-width: 420px;
@@ -85,7 +84,6 @@
       color: #a0b4c8;
     }
 
-    /* ── Tela do formulário ── */
     #tela-formulario {
       display: none;
       width: 100%;
@@ -116,20 +114,10 @@
       text-align: center;
     }
 
-    .emitente-info h3 {
-      color: #4aa3df;
-      font-size: 1.1rem;
-    }
+    .emitente-info h3 { color: #4aa3df; font-size: 1.1rem; }
+    .emitente-info p { color: #a0b4c8; font-size: 0.8rem; margin-top: 4px; }
 
-    .emitente-info p {
-      color: #a0b4c8;
-      font-size: 0.8rem;
-      margin-top: 4px;
-    }
-
-    .campo {
-      margin-bottom: 18px;
-    }
+    .campo { margin-bottom: 18px; }
 
     .campo label {
       display: block;
@@ -152,13 +140,8 @@
       transition: border-color 0.2s;
     }
 
-    .campo input:focus {
-      border-color: #4aa3df;
-    }
-
-    .campo input::placeholder {
-      color: #4a6278;
-    }
+    .campo input:focus { border-color: #4aa3df; }
+    .campo input::placeholder { color: #4a6278; }
 
     .btn-gerar {
       width: 100%;
@@ -188,17 +171,8 @@
       display: none;
     }
 
-    .mensagem.sucesso {
-      background: #0d3d1e;
-      border: 1px solid #1a7a3c;
-      color: #4caf7d;
-    }
-
-    .mensagem.erro {
-      background: #3d0d0d;
-      border: 1px solid #7a1a1a;
-      color: #f47a7a;
-    }
+    .mensagem.sucesso { background: #0d3d1e; border: 1px solid #1a7a3c; color: #4caf7d; }
+    .mensagem.erro { background: #3d0d0d; border: 1px solid #7a1a1a; color: #f47a7a; }
 
     .carregando {
       display: none;
@@ -223,24 +197,22 @@
     <p>Limpeza de Vidros · Comerciais & Residências</p>
   </div>
 
-  <!-- Tela 1: Escolha o emitente -->
   <div id="tela-selecao">
     <h2>Quem vai emitir o recibo?</h2>
     <div class="cards">
-      <div class="card" onclick="selecionarEmitente(1, 'Igor Rodrigues dos Santos', 'Cleaner Rodrigues')">
+      <div class="card" id="card-igor">
         <h3>Igor Rodrigues dos Santos</h3>
         <p>Cleaner Rodrigues · CPF 447.924.208-22</p>
       </div>
-      <div class="card" onclick="selecionarEmitente(2, 'Joel Saldanha de Cruz', 'Talento Vitrines')">
+      <div class="card" id="card-joel">
         <h3>Joel Saldanha de Cruz</h3>
-        <p>Talento Vitrines · CNPJ 353.204.882</p>
+        <p>Talento Vitrines · CPF 353.204.882</p>
       </div>
     </div>
   </div>
 
-  <!-- Tela 2: Formulário do recibo -->
   <div id="tela-formulario">
-    <button class="voltar" onclick="voltarSelecao()">← Voltar</button>
+    <button class="voltar" id="btn-voltar">← Voltar</button>
 
     <div class="emitente-info">
       <h3 id="nome-emitente"></h3>
@@ -262,7 +234,7 @@
       <input type="number" id="valor" placeholder="Ex: 80.00" step="0.01" min="0.01" />
     </div>
 
-    <button class="btn-gerar" id="btn-gerar" onclick="gerarRecibo()">
+    <button class="btn-gerar" id="btn-gerar">
       📄 Gerar Recibo PDF
     </button>
 
@@ -280,20 +252,28 @@
   <footer>Cleaner Rodrigues © 2026</footer>
 
   <script>
-    // URL base da API — quando for para produção, troca pelo endereço do Railway
-    const API_URL = 'https://hunger-bootlace-fiddle.ngrok-free.dev';
+    const API_URL = '';
 
     let emitterIdSelecionado = null;
+
+    // registra eventos após a página carregar
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('card-igor').addEventListener('click', function() {
+        selecionarEmitente(1, 'Igor Rodrigues dos Santos', 'Cleaner Rodrigues');
+      });
+      document.getElementById('card-joel').addEventListener('click', function() {
+        selecionarEmitente(2, 'Joel Saldanha de Cruz', 'Talento Vitrines');
+      });
+      document.getElementById('btn-voltar').addEventListener('click', voltarSelecao);
+      document.getElementById('btn-gerar').addEventListener('click', gerarRecibo);
+    });
 
     function selecionarEmitente(id, nome, empresa) {
       emitterIdSelecionado = id;
       document.getElementById('nome-emitente').textContent = nome;
       document.getElementById('empresa-emitente').textContent = empresa;
-
       document.getElementById('tela-selecao').style.display = 'none';
       document.getElementById('tela-formulario').style.display = 'block';
-
-      // limpa formulário
       document.getElementById('numero-recibo').value = '';
       document.getElementById('nome-cliente').value = '';
       document.getElementById('valor').value = '';
@@ -317,7 +297,6 @@
       const cliente = document.getElementById('nome-cliente').value.trim();
       const valor = document.getElementById('valor').value;
 
-      // validações básicas
       if (!numero || !cliente || !valor) {
         mostrarErro('Preencha todos os campos!');
         return;
@@ -342,11 +321,8 @@
           })
         });
 
-        if (!resposta.ok) {
-          throw new Error('Erro ao gerar o recibo. Tente novamente.');
-        }
+        if (!resposta.ok) throw new Error('Erro ao gerar o recibo. Tente novamente.');
 
-        // faz o download automático do PDF
         const blob = await resposta.blob();
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
