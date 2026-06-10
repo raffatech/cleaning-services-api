@@ -316,7 +316,7 @@
           body: JSON.stringify({
             receiptNumber: parseInt(numero),
             clientName: cliente,
-            value: parseFloat(valor),
+            value: parseFloat(parseFloat(valor.replace(',', '.')).toFixed(2)),
             emitterId: emitterIdSelecionado
           })
         });
