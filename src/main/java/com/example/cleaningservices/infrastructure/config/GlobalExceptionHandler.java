@@ -1,5 +1,6 @@
 package com.example.cleaningservices.infrastructure.config;
 
+import com.example.cleaningservices.domain.exception.EmitterNotFoundException;
 import com.example.cleaningservices.domain.exception.EmployeeNotFoundException;
 import com.example.cleaningservices.domain.exception.EmployeeValidationException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleEmployeeNotFound(EmployeeNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(EmitterNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEmitterNotFound(EmitterNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
