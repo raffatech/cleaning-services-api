@@ -72,6 +72,12 @@
 			<artifactId>pdfbox</artifactId>
 			<version>3.0.3</version>
 		</dependency>
+
+		<!-- Validação de campos obrigatórios nos DTOs -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

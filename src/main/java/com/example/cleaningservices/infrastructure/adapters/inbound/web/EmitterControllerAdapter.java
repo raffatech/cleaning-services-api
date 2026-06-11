@@ -20,26 +20,33 @@ public class EmitterControllerAdapter {
         this.emitterServicePort = emitterServicePort;
     }
 
-    // converte request → domínio
     private Emitter convertToDomain(EmitterRequest request) {
-        return new Emitter(
-                null,
-                request.getCompanyName(),
-                request.getSignerName(),
-                request.getCpfCnpj(),
-                request.getTemplatePath()
-        );
+        Emitter emitter = new Emitter();
+        emitter.setCompanyName(request.getCompanyName());
+        emitter.setSignerName(request.getSignerName());
+        emitter.setCpfCnpj(request.getCpfCnpj());
+        emitter.setTemplatePath(request.getTemplatePath());
+        emitter.setMunicipalRegistration(request.getMunicipalRegistration());
+        emitter.setPhone(request.getPhone());
+        emitter.setEmail(request.getEmail());
+        emitter.setAddress(request.getAddress());
+        emitter.setLogoPath(request.getLogoPath());
+        return emitter;
     }
 
-    // converte domínio → response
     private EmitterResponse convertToResponse(Emitter emitter) {
-        return new EmitterResponse(
-                emitter.getId(),
-                emitter.getCompanyName(),
-                emitter.getSignerName(),
-                emitter.getCpfCnpj(),
-                emitter.getTemplatePath()
-        );
+        EmitterResponse response = new EmitterResponse();
+        response.setId(emitter.getId());
+        response.setCompanyName(emitter.getCompanyName());
+        response.setSignerName(emitter.getSignerName());
+        response.setCpfCnpj(emitter.getCpfCnpj());
+        response.setTemplatePath(emitter.getTemplatePath());
+        response.setMunicipalRegistration(emitter.getMunicipalRegistration());
+        response.setPhone(emitter.getPhone());
+        response.setEmail(emitter.getEmail());
+        response.setAddress(emitter.getAddress());
+        response.setLogoPath(emitter.getLogoPath());
+        return response;
     }
 
     @PostMapping

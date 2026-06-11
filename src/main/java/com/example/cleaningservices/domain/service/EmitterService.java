@@ -3,7 +3,7 @@ package com.example.cleaningservices.domain.service;
 import com.example.cleaningservices.application.ports.inbound.EmitterServicePort;
 import com.example.cleaningservices.application.ports.outbound.EmitterRepositoryPort;
 import com.example.cleaningservices.domain.exception.EmitterNotFoundException;
-import com.example.cleaningservices.domain.exception.EmployeeValidationException;
+import com.example.cleaningservices.domain.exception.ValidationException;
 import com.example.cleaningservices.domain.model.Emitter;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class EmitterService implements EmitterServicePort {
         }
 
         if (!errors.isEmpty())
-            throw new EmployeeValidationException(errors);
+            throw new ValidationException(errors);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.cleaningservices.infrastructure.adapters.outbound.pdf;
 
+import com.example.cleaningservices.application.ports.outbound.ReceiptPdfPort;
 import com.example.cleaningservices.domain.model.Emitter;
 import com.example.cleaningservices.domain.model.Receipt;
 import org.apache.pdfbox.Loader;
@@ -16,23 +17,33 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 @Component
-public class PdfGeneratorAdapter {
+public class PdfGeneratorAdapter implements ReceiptPdfPort {
 
     public byte[] generate(Receipt receipt, Emitter emitter) {
         try {
+            // valida se o emitente tem template configurado
+            if (emitter.getTemplatePath() == null || emitter.getTemplatePath().isBlank()) {
+                throw new RuntimeException("Emitente '" + emitter.getCompanyName()
+                        + "' não possui template de recibo configurado. Configure o campo 'templatePath'.");
+            }
+
             // carrega o template do Canva baseado no emitente
             InputStream templateStream = getClass().getResourceAsStream(
                     "/static/templates/" + emitter.getTemplatePath());
 
             if (templateStream == null) {
-                throw new RuntimeException("Template not found for emitter: " + emitter.getCompanyName());
+                throw new RuntimeException("Arquivo de template não encontrado: " + emitter.getTemplatePath()
+                        + ". Verifique se o arquivo existe em src/main/resources/static/templates/");
             }
 
-            PDDocument document = Loader.loadPDF(templateStream.readAllBytes());
+            // lê o conteúdo do template e fecha o stream imediatamente (evita vazamento de recurso)
+            byte[] templateBytes = templateStream.readAllBytes();
+            templateStream.close();
+
+            PDDocument document = Loader.loadPDF(templateBytes);
             PDPage page = document.getPage(0);
 
             float pageHeight = page.getMediaBox().getHeight(); // 306pt
-            float pageWidth  = page.getMediaBox().getWidth();  // 396pt
 
             PDPageContentStream content = new PDPageContentStream(
                     document, page, PDPageContentStream.AppendMode.APPEND, true, true);
