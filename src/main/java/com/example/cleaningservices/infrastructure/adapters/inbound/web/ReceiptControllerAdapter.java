@@ -11,9 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/receipts")
-@Tag(name = "Receipts", description = "Receipt generation endpoints")
+@Tag(name = "Receipts", description = "Geração e histórico de recibos")
 public class ReceiptControllerAdapter {
 
     private final ReceiptServicePort receiptServicePort;
@@ -22,14 +25,23 @@ public class ReceiptControllerAdapter {
         this.receiptServicePort = receiptServicePort;
     }
 
-    @PostMapping
-    @Operation(summary = "Generate a receipt PDF")
-    @ApiResponse(responseCode = "200", description = "PDF generated successfully")
-    @ApiResponse(responseCode = "400", description = "Invalid request data")
-    @ApiResponse(responseCode = "404", description = "Emitter not found")
-    public ResponseEntity<byte[]> generateReceipt(@Valid @RequestBody ReceiptRequest request) {
+    private ReceiptResponse convertToResponse(Receipt receipt) {
+        return new ReceiptResponse(
+                receipt.getId(),
+                receipt.getReceiptNumber(),
+                receipt.getClientName(),
+                receipt.getValue(),
+                receipt.getEmitterId(),
+                receipt.getDate()
+        );
+    }
 
-        // monta o modelo de domínio a partir do request
+    @PostMapping
+    @Operation(summary = "Gerar recibo PDF", description = "Gera o PDF do recibo e salva o registro no banco")
+    @ApiResponse(responseCode = "200", description = "PDF gerado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Emitente não encontrado")
+    public ResponseEntity<byte[]> generateReceipt(@Valid @RequestBody ReceiptRequest request) {
         Receipt receipt = new Receipt(
                 request.getReceiptNumber(),
                 request.getClientName(),
@@ -38,17 +50,30 @@ public class ReceiptControllerAdapter {
                 null
         );
 
-        // gera o PDF
         byte[] pdf = receiptServicePort.generateReceipt(receipt);
 
-        // configura o header para download do arquivo
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment",
-                "recibo-" + request.getClientName() + "-"+ request.getReceiptNumber() + ".pdf");
+                "recibo-" + request.getClientName() + "-" + request.getReceiptNumber() + ".pdf");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdf);
+        return ResponseEntity.ok().headers(headers).body(pdf);
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar todos os recibos gerados")
+    @ApiResponse(responseCode = "200", description = "Lista de recibos")
+    public ResponseEntity<List<ReceiptResponse>> findAll() {
+        List<ReceiptResponse> responses = receiptServicePort.findAllReceipts()
+                .stream().map(this::convertToResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar recibo por ID")
+    @ApiResponse(responseCode = "200", description = "Recibo encontrado")
+    @ApiResponse(responseCode = "404", description = "Recibo não encontrado")
+    public ResponseEntity<ReceiptResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(convertToResponse(receiptServicePort.findReceiptById(id)));
     }
 }

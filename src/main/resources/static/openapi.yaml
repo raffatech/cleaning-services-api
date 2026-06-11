@@ -1,21 +1,19 @@
 openapi: 3.0.3
 info:
   title: Cleaning Services API
-  description: API for managing employees, emitters and generating receipts
+  description: API para gestao de prestadores de servico - recibos, orcamentos e NFS-e
   version: 1.0.0
 servers:
   - url: http://localhost:8080
-    description: Local server
+    description: Servidor local
 
 components:
   schemas:
+
     EmployeeRequest:
       type: object
-      description: Data to create or update an employee
-      required:
-        - name
-        - cpf
-        - role
+      description: Dados para criar ou atualizar um funcionario
+      required: [name, cpf, role, email]
       properties:
         name:
           type: string
@@ -33,7 +31,6 @@ components:
 
     EmployeeResponse:
       type: object
-      description: Data returned from an employee
       properties:
         id:
           type: integer
@@ -46,7 +43,6 @@ components:
           example: "123.456.789-00"
         role:
           type: string
-          enum: [CLEANER, SUPERVISOR, ADMIN]
           example: CLEANER
         email:
           type: string
@@ -54,12 +50,8 @@ components:
 
     EmitterRequest:
       type: object
-      description: Data to create or update an emitter
-      required:
-        - companyName
-        - signerName
-        - cpfCnpj
-        - templatePath
+      description: Dados para criar ou atualizar um emitente (prestador de servico)
+      required: [companyName, signerName, cpfCnpj]
       properties:
         companyName:
           type: string
@@ -72,11 +64,31 @@ components:
           example: "447.924.208-22"
         templatePath:
           type: string
+          description: Opcional - nome do template PDF do recibo em static/templates/
           example: template-cleaner-rodrigues.pdf
+        municipalRegistration:
+          type: string
+          description: Opcional - necessaria para emissao de NFS-e
+          example: "7.968.888-8"
+        phone:
+          type: string
+          description: Opcional - exibido no cabecalho do orcamento
+          example: "(11) 98417-9948"
+        email:
+          type: string
+          description: Opcional - exibido no cabecalho do orcamento
+          example: joelsalnhadacruz@hotmail.com
+        address:
+          type: string
+          description: Opcional - endereco completo exibido no cabecalho do orcamento
+          example: "Rua Gondarem, 323, Jardim Marilia, Sao Paulo, SP"
+        logoPath:
+          type: string
+          description: Opcional - nome do arquivo da logo em static/logos/
+          example: logo-talento.png
 
     EmitterResponse:
       type: object
-      description: Data returned from an emitter
       properties:
         id:
           type: integer
@@ -93,15 +105,202 @@ components:
         templatePath:
           type: string
           example: template-cleaner-rodrigues.pdf
+        municipalRegistration:
+          type: string
+          example: "7.968.888-8"
+        phone:
+          type: string
+          example: "(11) 98417-9948"
+        email:
+          type: string
+          example: joelsalnhadacruz@hotmail.com
+        address:
+          type: string
+          example: "Rua Gondarem, 323, Jardim Marilia, Sao Paulo, SP"
+        logoPath:
+          type: string
+          example: logo-talento.png
+
+    ClientRequest:
+      type: object
+      description: Dados para criar ou atualizar um cliente
+      required: [name, cpfCnpj]
+      properties:
+        name:
+          type: string
+          example: VMT TELECOMUNICACOES LTDA
+        cpfCnpj:
+          type: string
+          example: "05.028.732/0154-50"
+        email:
+          type: string
+          example: financeiro@vmt.com.br
+        phone:
+          type: string
+          example: "(11) 3000-0000"
+        zipCode:
+          type: string
+          description: CEP - o frontend usa ViaCEP para preencher os campos de endereco
+          example: "04036-100"
+        street:
+          type: string
+          example: "R. Domingos de Morais"
+        number:
+          type: string
+          example: "2584"
+        complement:
+          type: string
+          example: "Loja EC SM ST 0033"
+        neighborhood:
+          type: string
+          example: "Vila Mariana"
+        city:
+          type: string
+          example: Sao Paulo
+        state:
+          type: string
+          example: SP
+        municipalRegistration:
+          type: string
+          description: Opcional - necessaria para emissao de NFS-e
+          example: "7.387.058-7"
+
+    ClientResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: VMT TELECOMUNICACOES LTDA
+        cpfCnpj:
+          type: string
+          example: "05.028.732/0154-50"
+        email:
+          type: string
+          example: financeiro@vmt.com.br
+        phone:
+          type: string
+          example: "(11) 3000-0000"
+        zipCode:
+          type: string
+          example: "04036-100"
+        street:
+          type: string
+          example: "R. Domingos de Morais"
+        number:
+          type: string
+          example: "2584"
+        complement:
+          type: string
+          example: "Loja EC SM ST 0033"
+        neighborhood:
+          type: string
+          example: "Vila Mariana"
+        city:
+          type: string
+          example: Sao Paulo
+        state:
+          type: string
+          example: SP
+        municipalRegistration:
+          type: string
+          example: "7.387.058-7"
+
+    ReceiptResponse:
+      type: object
+      description: Dados de um recibo salvo no banco
+      properties:
+        id:
+          type: integer
+          example: 1
+        receiptNumber:
+          type: integer
+          example: 5
+        clientName:
+          type: string
+          example: Vivo VMT
+        value:
+          type: number
+          example: 80.00
+        emitterId:
+          type: integer
+          example: 1
+        date:
+          type: string
+          format: date
+          example: "2026-06-11"
+
+    QuoteItemResponse:
+      type: object
+      properties:
+        description:
+          type: string
+          example: "Limpeza de vitrine"
+        value:
+          type: number
+          example: 928.99
+        quantity:
+          type: number
+          example: 1.0
+        unit:
+          type: string
+          example: un
+        total:
+          type: number
+          example: 928.99
+
+    QuoteResponse:
+      type: object
+      description: Dados de um orçamento salvo no banco
+      properties:
+        id:
+          type: integer
+          example: 1
+        quoteNumber:
+          type: integer
+          example: 4
+        emitterId:
+          type: integer
+          example: 2
+        clientName:
+          type: string
+          example: JM Moveis Design
+        message:
+          type: string
+          example: "Aqui esta o orcamento conforme solicitado"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteItemResponse'
+        discountPercent:
+          type: number
+          example: 25.0
+        discountAmount:
+          type: number
+          example: 232.25
+        subtotal:
+          type: number
+          example: 928.99
+        finalValue:
+          type: number
+          example: 696.74
+        paymentConditions:
+          type: string
+          example: Mensal
+        paymentMethods:
+          type: string
+          example: "PIX, Dinheiro, Cartao de Debito, Boleto"
+        date:
+          type: string
+          format: date
+          example: "2026-06-11"
 
     ReceiptRequest:
       type: object
-      description: Data to generate a receipt PDF
-      required:
-        - receiptNumber
-        - clientName
-        - value
-        - emitterId
+      description: Dados para gerar um recibo PDF
+      required: [receiptNumber, clientName, value, emitterId]
       properties:
         receiptNumber:
           type: integer
@@ -116,10 +315,118 @@ components:
           type: integer
           example: 1
 
+    QuoteItemRequest:
+      type: object
+      description: Um item do orcamento - representa uma linha da tabela
+      required: [description, value, quantity]
+      properties:
+        description:
+          type: string
+          example: "Limpeza de vitrine. Fachada parte alta R$529,99."
+        value:
+          type: number
+          example: 928.99
+        quantity:
+          type: number
+          example: 1.0
+        unit:
+          type: string
+          default: un
+          example: un
+
+    QuoteRequest:
+      type: object
+      description: Dados para gerar o PDF do orcamento
+      required: [emitterId, quoteNumber, clientName, items]
+      properties:
+        emitterId:
+          type: integer
+          example: 1
+        quoteNumber:
+          type: integer
+          example: 4
+        clientName:
+          type: string
+          example: JM Moveis Design
+        message:
+          type: string
+          example: "Aqui esta o orcamento conforme solicitado"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteItemRequest'
+        discountPercent:
+          type: number
+          example: 25.0
+        paymentConditions:
+          type: string
+          example: Mensal
+        paymentMethods:
+          type: string
+          example: "PIX, Dinheiro, Cartao de Debito, Boleto"
+
+    ServiceInvoiceRequest:
+      type: object
+      description: Dados para emitir uma NFS-e
+      required: [emitterId, clientId, value, serviceDescription]
+      properties:
+        emitterId:
+          type: integer
+          example: 1
+        clientId:
+          type: integer
+          example: 1
+        value:
+          type: number
+          example: 350.00
+        serviceDescription:
+          type: string
+          example: "Limpeza de vitrine comercial"
+        serviceCode:
+          type: string
+          default: "01406"
+          example: "01406"
+        cityOfService:
+          type: string
+          default: "Sao Paulo"
+          example: "Sao Paulo"
+
+    ServiceInvoiceResponse:
+      type: object
+      description: Dados retornados apos a emissao da NFS-e
+      properties:
+        status:
+          type: string
+          example: EMITIDA
+        invoiceNumber:
+          type: string
+          example: "1818"
+        verificationCode:
+          type: string
+          example: "R8V7-EXHG"
+        invoiceUrl:
+          type: string
+          example: "https://nfe.prefeitura.sp.gov.br/nfse/1818"
+        value:
+          type: number
+          example: 350.00
+        serviceDescription:
+          type: string
+          example: "Limpeza de vitrine comercial"
+        issueDate:
+          type: string
+          format: date
+          example: "2026-06-11"
+        focusNfeReference:
+          type: string
+          example: "MOCK-A3F2B1C9"
+
 paths:
+
   /employees:
     post:
-      summary: Create a new employee
+      summary: Criar funcionario
+      tags: [Employees]
       requestBody:
         required: true
         content:
@@ -128,29 +435,32 @@ paths:
               $ref: '#/components/schemas/EmployeeRequest'
       responses:
         '201':
-          description: Employee created successfully
+          description: Criado com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
         '400':
-          description: Invalid data
+          description: Dados invalidos
         '409':
-          description: CPF or email already exists
+          description: CPF ou e-mail ja cadastrado
     get:
-      summary: List all employees
+      summary: Listar funcionarios
+      tags: [Employees]
       responses:
         '200':
-          description: Employee list
+          description: Lista de funcionarios
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/EmployeeResponse'
+
   /employees/{id}:
     get:
-      summary: Find employee by ID
+      summary: Buscar funcionario por ID
+      tags: [Employees]
       parameters:
         - name: id
           in: path
@@ -159,15 +469,16 @@ paths:
             type: integer
       responses:
         '200':
-          description: Employee found
+          description: Encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
         '404':
-          description: Employee not found
+          description: Nao encontrado
     put:
-      summary: Update an employee by ID
+      summary: Atualizar funcionario
+      tags: [Employees]
       parameters:
         - name: id
           in: path
@@ -182,19 +493,20 @@ paths:
               $ref: '#/components/schemas/EmployeeRequest'
       responses:
         '200':
-          description: Employee updated successfully
+          description: Atualizado com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmployeeResponse'
         '400':
-          description: Invalid data
+          description: Dados invalidos
         '404':
-          description: Employee not found
+          description: Nao encontrado
         '409':
-          description: CPF or email already exists
+          description: CPF ou e-mail ja cadastrado
     delete:
-      summary: Delete an employee by ID
+      summary: Deletar funcionario
+      tags: [Employees]
       parameters:
         - name: id
           in: path
@@ -203,13 +515,14 @@ paths:
             type: integer
       responses:
         '204':
-          description: Employee deleted successfully
+          description: Deletado com sucesso
         '404':
-          description: Employee not found
+          description: Nao encontrado
 
   /emitters:
     post:
-      summary: Create a new emitter
+      summary: Criar emitente
+      tags: [Emitters]
       requestBody:
         required: true
         content:
@@ -218,20 +531,21 @@ paths:
               $ref: '#/components/schemas/EmitterRequest'
       responses:
         '201':
-          description: Emitter created successfully
+          description: Criado com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmitterResponse'
         '400':
-          description: Invalid data
+          description: Dados invalidos
         '409':
-          description: CPF/CNPJ already exists
+          description: CPF/CNPJ ja cadastrado
     get:
-      summary: List all emitters
+      summary: Listar emitentes
+      tags: [Emitters]
       responses:
         '200':
-          description: Emitter list
+          description: Lista de emitentes
           content:
             application/json:
               schema:
@@ -241,7 +555,8 @@ paths:
 
   /emitters/{id}:
     get:
-      summary: Find emitter by ID
+      summary: Buscar emitente por ID
+      tags: [Emitters]
       parameters:
         - name: id
           in: path
@@ -250,15 +565,16 @@ paths:
             type: integer
       responses:
         '200':
-          description: Emitter found
+          description: Encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmitterResponse'
         '404':
-          description: Emitter not found
+          description: Nao encontrado
     put:
-      summary: Update an emitter by ID
+      summary: Atualizar emitente
+      tags: [Emitters]
       parameters:
         - name: id
           in: path
@@ -273,19 +589,20 @@ paths:
               $ref: '#/components/schemas/EmitterRequest'
       responses:
         '200':
-          description: Emitter updated successfully
+          description: Atualizado com sucesso
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmitterResponse'
         '400':
-          description: Invalid data
+          description: Dados invalidos
         '404':
-          description: Emitter not found
+          description: Nao encontrado
         '409':
-          description: CPF/CNPJ already exists
+          description: CPF/CNPJ ja cadastrado
     delete:
-      summary: Delete an emitter by ID
+      summary: Deletar emitente
+      tags: [Emitters]
       parameters:
         - name: id
           in: path
@@ -294,13 +611,111 @@ paths:
             type: integer
       responses:
         '204':
-          description: Emitter deleted successfully
+          description: Deletado com sucesso
         '404':
-          description: Emitter not found
+          description: Nao encontrado
+
+  /clients:
+    post:
+      summary: Criar cliente
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        '201':
+          description: Criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Dados invalidos
+        '409':
+          description: CPF/CNPJ ja cadastrado
+    get:
+      summary: Listar clientes
+      tags: [Clients]
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientResponse'
+
+  /clients/{id}:
+    get:
+      summary: Buscar cliente por ID
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '404':
+          description: Nao encontrado
+    put:
+      summary: Atualizar cliente
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        '200':
+          description: Atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Dados invalidos
+        '404':
+          description: Nao encontrado
+        '409':
+          description: CPF/CNPJ ja cadastrado
+    delete:
+      summary: Deletar cliente
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deletado com sucesso
+        '404':
+          description: Nao encontrado
 
   /receipts:
     post:
-      summary: Generate a receipt PDF
+      summary: Gerar recibo PDF
+      description: Gera o PDF do recibo e salva o registro no banco
+      tags: [Receipts]
       requestBody:
         required: true
         content:
@@ -309,13 +724,161 @@ paths:
               $ref: '#/components/schemas/ReceiptRequest'
       responses:
         '200':
-          description: PDF generated successfully
+          description: PDF gerado com sucesso
           content:
             application/pdf:
               schema:
                 type: string
                 format: binary
         '400':
-          description: Invalid data
+          description: Dados invalidos
         '404':
-          description: Emitter not found
+          description: Emitente nao encontrado
+    get:
+      summary: Listar todos os recibos gerados
+      tags: [Receipts]
+      responses:
+        '200':
+          description: Lista de recibos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceiptResponse'
+
+  /receipts/{id}:
+    get:
+      summary: Buscar recibo por ID
+      tags: [Receipts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Recibo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptResponse'
+        '404':
+          description: Recibo nao encontrado
+
+  /quotes:
+    post:
+      summary: Gerar orcamento PDF
+      description: Gera PDF com cabecalho do emitente, tabela de itens, desconto e condicoes de pagamento.
+      tags: [Quotes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      responses:
+        '200':
+          description: PDF do orcamento gerado com sucesso
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Dados invalidos
+        '404':
+          description: Emitente nao encontrado
+    get:
+      summary: Listar todos os orcamentos gerados
+      tags: [Quotes]
+      responses:
+        '200':
+          description: Lista de orcamentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuoteResponse'
+
+  /quotes/{id}:
+    get:
+      summary: Buscar orcamento por ID
+      tags: [Quotes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Orcamento encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteResponse'
+        '404':
+          description: Orcamento nao encontrado
+
+  /invoices:
+    post:
+      summary: Emitir NFS-e
+      description: >
+        Emite uma Nota Fiscal Eletronica de Servicos via Focus NFe e salva no banco.
+        Em modo mock (spring.profiles.active=mock), retorna nota simulada.
+        Para producao, use spring.profiles.active=prod com o token do Focus NFe.
+      tags: [Invoices]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceInvoiceRequest'
+      responses:
+        '200':
+          description: NFS-e emitida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInvoiceResponse'
+        '400':
+          description: Dados invalidos
+        '404':
+          description: Emitente ou cliente nao encontrado
+        '422':
+          description: Nota rejeitada pelo Focus NFe ou Prefeitura
+    get:
+      summary: Listar todas as notas fiscais emitidas
+      tags: [Invoices]
+      responses:
+        '200':
+          description: Lista de NFS-e
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceInvoiceResponse'
+
+  /invoices/{id}:
+    get:
+      summary: Buscar NFS-e por ID
+      tags: [Invoices]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Nota fiscal encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceInvoiceResponse'
+        '404':
+          description: Nota fiscal nao encontrada

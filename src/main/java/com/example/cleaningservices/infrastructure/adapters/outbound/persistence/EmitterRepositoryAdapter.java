@@ -20,24 +20,34 @@ public class EmitterRepositoryAdapter implements EmitterRepositoryPort {
 
     // converte domínio → entidade JPA
     private EmitterEntity convertToEntity(Emitter emitter) {
-        return new EmitterEntity(
-                emitter.getId(),
-                emitter.getCompanyName(),
-                emitter.getSignerName(),
-                emitter.getCpfCnpj(),
-                emitter.getTemplatePath()
-        );
+        EmitterEntity entity = new EmitterEntity();
+        entity.setId(emitter.getId());
+        entity.setCompanyName(emitter.getCompanyName());
+        entity.setSignerName(emitter.getSignerName());
+        entity.setCpfCnpj(emitter.getCpfCnpj());
+        entity.setTemplatePath(emitter.getTemplatePath());
+        entity.setMunicipalRegistration(emitter.getMunicipalRegistration());
+        entity.setPhone(emitter.getPhone());
+        entity.setEmail(emitter.getEmail());
+        entity.setAddress(emitter.getAddress());
+        entity.setLogoPath(emitter.getLogoPath());
+        return entity;
     }
 
-    // converte entidade JPA → domínio
     private Emitter convertToDomain(EmitterEntity entity) {
-        return new Emitter(
+        Emitter emitter = new Emitter(
                 entity.getId(),
                 entity.getCompanyName(),
                 entity.getSignerName(),
                 entity.getCpfCnpj(),
-                entity.getTemplatePath()
+                entity.getTemplatePath(),
+                entity.getMunicipalRegistration()
         );
+        emitter.setPhone(entity.getPhone());
+        emitter.setEmail(entity.getEmail());
+        emitter.setAddress(entity.getAddress());
+        emitter.setLogoPath(entity.getLogoPath());
+        return emitter;
     }
 
     @Override

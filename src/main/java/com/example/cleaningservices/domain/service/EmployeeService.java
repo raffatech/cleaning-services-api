@@ -3,7 +3,7 @@ package com.example.cleaningservices.domain.service;
 import com.example.cleaningservices.application.ports.inbound.EmployeeServicePort;
 import com.example.cleaningservices.application.ports.outbound.EmployeeRepositoryPort;
 import com.example.cleaningservices.domain.exception.EmployeeNotFoundException;
-import com.example.cleaningservices.domain.exception.EmployeeValidationException;
+import com.example.cleaningservices.domain.exception.ValidationException;
 import com.example.cleaningservices.domain.model.Employee;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ public class EmployeeService implements EmployeeServicePort {
             }
         }
         if (!errors.isEmpty())
-            throw new EmployeeValidationException(errors);
+            throw new ValidationException(errors);
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public class Receipt {
 
+    private Long id;                // id gerado pelo banco após salvar
     private Integer receiptNumber;  // número do recibo
     private String clientName;      // nome do cliente (Recebemos de)
     private BigDecimal value;       // valor em R$
@@ -21,6 +22,9 @@ public class Receipt {
         this.emitterId = emitterId;
         this.date = date;
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Integer getReceiptNumber() { return receiptNumber; }
     public void setReceiptNumber(Integer receiptNumber) { this.receiptNumber = receiptNumber; }
