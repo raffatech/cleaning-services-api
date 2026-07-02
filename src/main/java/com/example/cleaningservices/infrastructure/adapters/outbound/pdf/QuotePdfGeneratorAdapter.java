@@ -108,7 +108,7 @@ public class QuotePdfGeneratorAdapter implements QuotePdfPort {
 
         // tenta carregar e desenhar a logo se existir
         if (emitter.getLogoPath() != null && !emitter.getLogoPath().isBlank()) {
-            try (InputStream logoStream = getClass().getResourceAsStream("/frontend/logos/" + emitter.getLogoPath())) {
+            try (InputStream logoStream = getClass().getResourceAsStream("/static/logos/" + emitter.getLogoPath())) {
                 if (logoStream != null) {
                     PDImageXObject logo = PDImageXObject.createFromByteArray(doc, logoStream.readAllBytes(), emitter.getLogoPath());
                     float logoAltura = 40f;
